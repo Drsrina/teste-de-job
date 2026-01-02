@@ -37,8 +37,8 @@ steps:
 images:
   - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_AR_REPO_NAME}/meu-job-python:latest'
 
-# CORREÇÃO DO ERRO:
-# Configura o log para ir direto para o Cloud Logging, 
-# evitando a necessidade de configurar um Bucket específico.
+# CORREÇÃO DO ERRO (Tentativa 2 - Mais Robusta):
+# Usa um bucket regional próprio do usuário para os logs.
+# Isso resolve o problema de permissão da Service Account sem desativar os logs.
 options:
-  logging: CLOUD_LOGGING_ONLY
+  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
