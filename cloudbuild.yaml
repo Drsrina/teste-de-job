@@ -1,0 +1,30 @@
+steps:
+  # 1. Build da imagem Docker
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build', 
+      '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/meu-job-python:latest', 
+      '.'
+    ]
+
+  # 2. Push da imagem para o Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'push', 
+      '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/meu-job-python:latest'
+    ]
+
+  # 3. (Opcional) Atualizar/Criar o Cloud Run Job
+  # Isso garante que o Job use sempre a última imagem criada
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'jobs', 'update', 'meu-job-python-job',
+      '--image', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/meu-job-python:latest',
+      '--region', '$_REGION',
+      '--set-env-vars', 'AMBIENTE=Producao'
+    ]
+
+# Define onde a imagem final ficará disponível (para logs e segurança)
+images:
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO_NAME/meu-job-python:latest'
